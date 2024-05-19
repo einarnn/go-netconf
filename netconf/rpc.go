@@ -148,7 +148,13 @@ func MethodGetConfigFiltered(source string, filterType string, dataXml string) R
 
 // MethodGet files a NETCONF get source request with the remote host
 func MethodGet(filterType string, dataXml string) RawMethod {
-	return RawMethod(fmt.Sprintf("<get><filter type=\"%s\">%s</filter></get>", filterType, dataXml))
+	if filterType == "subtree" {
+		return RawMethod(fmt.Sprintf("<get><filter type=\"%s\">%s</filter></get>", filterType, dataXml))
+	}
+	if filterType == "xpath" {
+		return RawMethod(fmt.Sprintf("<get><filter type=\"%s\" select=\"%s\"/></get>", filterType, dataXml))
+	}
+	return RawMethod("<get/>")
 }
 
 // MethodEditConfig files a NETCONF edit-config request with the remote host
