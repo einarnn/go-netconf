@@ -4,7 +4,7 @@
 [![Report Card](https://goreportcard.com/badge/github.com/einarnn/go-netconf)](https://goreportcard.com/report/github.com/einarnn/go-netconf)
 ![Build Status](https://github.com/einarnn/go-netconf/actions/workflows/go.yml/badge.svg)
 
-This library is a simple NETCONF client based on [RFC6241](http://tools.ietf.org/html/rfc6241) and [RFC6242](http://tools.ietf.org/html/rfc6242) (although not fully compliant yet).
+This library is a **fork** of a simple NETCONF client based on [RFC6241](http://tools.ietf.org/html/rfc6241) and [RFC6242](http://tools.ietf.org/html/rfc6242) (although not fully compliant yet). The original fork is at [https://github.com/Juniper/go-netconf](https://github.com/Juniper/go-netconf)
 
 > **Note:** This is currently pre-alpha release.  API and features may and probably will change.  Suggestions and pull requests are welcome.
 
@@ -14,8 +14,15 @@ This library is a simple NETCONF client based on [RFC6241](http://tools.ietf.org
 * Support for custom RPCs.
 * Independent of XML library.  Free to choose encoding/xml or another third party library to parse the results.
 
+Since the fork the following minor additions have been made:
+
+* Removed use of deprecated standard library x509 functions.
+* Added stripping of NETCONF 1.1 chunk separators.
+* Now support XPath filters for `get` and `get-config`.
+
+
 ## Install
-* Requires Go 1.9 or later!
+* Requires Go 1.19 or later!
 ```bash
 $ go get github.com/Juniper/go-netconf/netconf
 ```
@@ -24,7 +31,8 @@ $ go get github.com/Juniper/go-netconf/netconf
 * See examples in `examples/` directory.
 
 ## Documentation
-You can view full API documentation at GoDoc: http://godoc.org/github.com/Juniper/go-netconf/netconf
+
+You can view full API documentation at GoDoc: http://godoc.org/github.com/einarnn/go-netconf/netconf
 
 ## License
 (BSD 2)
