@@ -42,6 +42,7 @@ type Transport interface {
 	ReceiveHello() (*HelloMessage, error)
 	SendHello(*HelloMessage) error
 	SetVersion(version string)
+	GetVersion() string
 }
 
 type TransportBasicIO struct {
@@ -52,6 +53,10 @@ type TransportBasicIO struct {
 
 func (t *TransportBasicIO) SetVersion(version string) {
 	t.version = version
+}
+
+func (t *TransportBasicIO) GetVersion() string {
+	return t.version
 }
 
 // Sends a well formated NETCONF rpc message as a slice of bytes adding on the

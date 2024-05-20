@@ -11,6 +11,7 @@ Package netconf provides support for a a simple NETCONF client based on RFC6241 
 package netconf
 
 import (
+	"bytes"
 	"encoding/xml"
 	"strings"
 )
@@ -51,8 +52,24 @@ func (s *Session) Exec(methods ...RPCMethod) (*RPCReply, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	if s.Transport.GetVersion() == "v1.1" {
+		reply.Data = stripV11Separators(reply.Data)
+	}
 	return reply, nil
+}
+
+// Strip out NETCONF v1.1 separators
+func stripV11Separators(data string) string {
+	if len(data) == 0 {
+		return data
+	}
+	var buf bytes.Buffer
+	for _, s := range strings.Split(data, "\n") {
+		if !strings.HasPrefix(s, "#") {
+			buf.WriteString(s)
+		}
+	}
+	return buf.String()
 }
 
 // NewSession creates a new NETCONF session using the provided transport layer.
