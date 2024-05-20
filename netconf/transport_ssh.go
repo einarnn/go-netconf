@@ -7,10 +7,8 @@
 package netconf
 
 import (
-	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"strings"
@@ -178,7 +176,7 @@ func SSHConfigPassword(user string, pass string) *ssh.ClientConfig {
 // and passphrase and returns a new ssh.ClientConfig setup to pass credentials
 // to DialSSH
 func SSHConfigPubKeyFile(user string, file string, passphrase string) (*ssh.ClientConfig, error) {
-	buf, err := ioutil.ReadFile(file)
+	buf, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
@@ -186,19 +184,16 @@ func SSHConfigPubKeyFile(user string, file string, passphrase string) (*ssh.Clie
 	if len(rest) > 0 {
 		return nil, fmt.Errorf("pem: unable to decode file %s", file)
 	}
-
-	if x509.IsEncryptedPEMBlock(block) {
-		b, err := x509.DecryptPEMBlock(block, []byte(passphrase))
-		if err != nil {
-			return nil, err
-		}
-		buf = pem.EncodeToMemory(&pem.Block{
-			Type:  block.Type,
-			Bytes: b,
-		})
+	var ok bool
+	if _, ok = block.Headers["Proc-Type"]; ok {
+		_, ok = block.Headers["DEK-Info"]
 	}
-
-	key, err := ssh.ParsePrivateKey(buf)
+	var key ssh.Signer
+	if ok {
+		key, err = ssh.ParsePrivateKeyWithPassphrase(buf, []byte(passphrase))
+	} else {
+		key, err = ssh.ParsePrivateKey(buf)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -208,7 +203,6 @@ func SSHConfigPubKeyFile(user string, file string, passphrase string) (*ssh.Clie
 			ssh.PublicKeys(key),
 		},
 	}, nil
-
 }
 
 // SSHConfigPubKeyAgent is a convience function that takes a username and
