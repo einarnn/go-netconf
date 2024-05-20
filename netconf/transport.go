@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	// msgSeperator is used to separate sent messages via NETCONF
-	msgSeperator     = "]]>]]>"
-	msgSeperator_v11 = "\n##\n"
+	// msgseparator is used to separate sent messages via NETCONF
+	msgseparator     = "]]>]]>"
+	msgseparator_v11 = "\n##\n"
 )
 
 // DefaultCapabilities sets the default capabilities of the client library
@@ -33,7 +33,7 @@ type HelloMessage struct {
 	SessionID    int      `xml:"session-id,omitempty"`
 }
 
-// Transport interface defines what characterisitics make up a NETCONF transport
+// Transport interface defines what characteristics make up a NETCONF transport
 // layer object.
 type Transport interface {
 	Send([]byte) error
@@ -57,13 +57,13 @@ func (t *TransportBasicIO) SetVersion(version string) {
 // Sends a well formated NETCONF rpc message as a slice of bytes adding on the
 // nessisary framining messages.
 func (t *TransportBasicIO) Send(data []byte) error {
-	var seperator []byte
+	var separator []byte
 	var dataInfo []byte
 	//headlen := 0
 	if t.version == "v1.1" {
-		seperator = append(seperator, []byte(msgSeperator_v11)...)
+		separator = append(separator, []byte(msgseparator_v11)...)
 	} else {
-		seperator = append(seperator, []byte(msgSeperator)...)
+		separator = append(separator, []byte(msgseparator)...)
 	}
 
 	if t.version == "v1.1" {
@@ -73,20 +73,20 @@ func (t *TransportBasicIO) Send(data []byte) error {
 		//headlen = len([]byte(header))
 	}
 	dataInfo = append(dataInfo, data...)
-	dataInfo = append(dataInfo, seperator...)
+	dataInfo = append(dataInfo, separator...)
 	_, err := t.Write(dataInfo)
 
 	return err
 }
 
 func (t *TransportBasicIO) Receive() ([]byte, error) {
-	var seperator []byte
+	var separator []byte
 	if t.version == "v1.1" {
-		seperator = append(seperator, []byte(msgSeperator_v11)...)
+		separator = append(separator, []byte(msgseparator_v11)...)
 	} else {
-		seperator = append(seperator, []byte(msgSeperator)...)
+		separator = append(separator, []byte(msgseparator)...)
 	}
-	return t.WaitForBytes([]byte(seperator))
+	return t.WaitForBytes([]byte(separator))
 }
 
 func (t *TransportBasicIO) SendHello(hello *HelloMessage) error {
