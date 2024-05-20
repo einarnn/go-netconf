@@ -24,7 +24,7 @@ Since the fork the following minor additions have been made:
 ## Install
 * Requires Go 1.19 or later!
 ```bash
-$ go get github.com/Juniper/go-netconf/netconf
+$ go get github.com/einarnn/go-netconf/netconf
 ```
 
 ## Example
